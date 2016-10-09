@@ -157,8 +157,12 @@ def process_framework_files(filename):
         pod_spec_file_name = get_pod_name() + ".podspec"
         resource_line = get_line('s.ios.resource', new_spec_file_name)
         new_resource_line = "  s.ios.resource             = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework/Versions/A/Resources/**/*" + "'\n"
-        if get_line("s.ios.resource", pod_spec_file_name).strip(' ')[0] is "#" and get_line("s.ios.resources", pod_spec_file_name).strip(' ')[0] is "#":
-            new_resource_line = "#" + new_resource_line
+
+        pod_resource_line = get_line("s.resource", pod_spec_file_name)
+        pod_resources_line = get_line("s.resources", pod_spec_file_name)
+        if len(pod_resource_line)>0 and len(pod_resources_line)>0:
+            if get_line("s.resource", pod_spec_file_name).strip(' ')[0] is "#" and get_line("s.resources", pod_spec_file_name).strip(' ')[0] is "#":
+                new_resource_line = "#" + new_resource_line
 
         replace_file_line(resource_line, new_resource_line, new_spec_file_name)
 
@@ -183,7 +187,7 @@ def process_framework_files(filename):
     return ""
 
 def main():
-    # #删除framework文件
+    #删除framework文件
     delete_framework_files()
 
     #获取pod_name
@@ -191,7 +195,7 @@ def main():
     #.podspec文件名
     pod_spec_file_name = pod_name + ".podspec"
 
-    # #版本号加1
+    #版本号加1
     new_version_number = add_version_number(get_line("s.version", pod_spec_file_name))
     new_version_number_line = '  s.version      =  "' + new_version_number + '"\n'
     replace_file_line(get_line("s.version", pod_spec_file_name), new_version_number_line, pod_spec_file_name)
