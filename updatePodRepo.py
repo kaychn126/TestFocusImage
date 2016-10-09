@@ -89,6 +89,7 @@ def git_update_with_tag(tag):
     print('git_update_with_tag 返回值' + str(res))
     return res
 
+#更新pod
 def pod_update(podname):
     repo_push = 'pod repo push EZBSpecs ' + podname + '.podspec ' + '--sources=https://github.com/CocoaPods/Specs.git,https://git.coding.net/cker/EZBSpecs.git --allow-warnings --verbose'
     res = os.system(repo_push)
@@ -96,7 +97,7 @@ def pod_update(podname):
     return res
 
 #打包framework
-def pod_package(file):
+def pod_package_framework(file):
     commond = "pod package " + file
     res = os.system(commond)
     print('pod_package 返回值' + str(res))
@@ -120,6 +121,9 @@ def main():
 
     #更新pod
     pod_update(pod_name)
+
+    #打包framework
+    pod_package_framework(pod_spec_file_name)
 
     # pod_framework_name = pod_name + "-framework"
     # pod_framework_spec_file_name = pod_framework_name + ".podspec"
