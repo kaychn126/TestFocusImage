@@ -83,7 +83,7 @@ def git_update_with_tag(tag):
     os.popen('git add *')
     os.popen('git commit -m "pod update"')
     os.popen('git pull')
-    os.popen('git push')
+    os.popen('git push origin master')
     os.popen('git tag ' + tag)
     os.popen('git push origin --tags')
 
@@ -114,7 +114,7 @@ def main():
     git_update_with_tag(new_version_number)
 
     #更新pod
-    # pod_update(pod_name)
+    pod_update(pod_name)
 
     # pod_framework_name = pod_name + "-framework"
     # pod_framework_spec_file_name = pod_framework_name + ".podspec"
