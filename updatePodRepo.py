@@ -145,22 +145,22 @@ def process_framework_files(filename):
 
         #修改s.ios.preserve_paths
         preservepaths_line = get_line('s.ios.preserve_paths', new_spec_file_name)
-        new_preservepaths_line = "  s.ios.preserve_paths       = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework" + "'\n"
+        new_preservepaths_line = "  s.ios.preserve_paths       = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework" + "'\n"
         replace_file_line(preservepaths_line, new_preservepaths_line, new_spec_file_name)
 
         #修改s.ios.public_header_files
         public_header_files_line = get_line('s.ios.public_header_files', new_spec_file_name)
-        new_public_header_files_line = "  s.ios.public_header_files  = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework/Versions/A/Headers/*.h" + "'\n"
+        new_public_header_files_line = "  s.ios.public_header_files  = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework/Versions/A/Headers/*.h" + "'\n"
         replace_file_line(public_header_files_line, new_public_header_files_line, new_spec_file_name)
 
         #修改s.ios.resource
         resource_line = get_line('s.ios.resource', new_spec_file_name)
-        new_resource_line = "  s.ios.resource             = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework/Versions/A/Resources/**/*" + "'\n"
+        new_resource_line = "  s.ios.resource             = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework/Versions/A/Resources/**/*" + "'\n"
         replace_file_line(resource_line, new_resource_line, new_spec_file_name)
 
         #修改s.ios.vendored_frameworks
         vendored_frameworks_line = get_line('s.ios.vendored_frameworks', new_spec_file_name)
-        new_vendored_frameworks_line = "  s.ios.vendored_frameworks  = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework" + "'\n"
+        new_vendored_frameworks_line = "  s.ios.vendored_frameworks  = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework" + "'\n"
         replace_file_line(vendored_frameworks_line, new_vendored_frameworks_line, new_spec_file_name)
 
         #单引号全部替换成双引号
@@ -193,22 +193,19 @@ def main():
     replace_file_line(get_line("s.version", pod_spec_file_name), new_version_number_line, pod_spec_file_name)
 
     #提交git,打tag
-    git_update_with_tag(new_version_number)
+    if git_update_with_tag(new_version_number) == 0:
+        #更新pod
+        if pod_update(pod_name) == 0:
+            #打包framework
+            pod_package_framework(pod_spec_file_name)
 
-    #更新pod
-    pod_update(pod_name)
+            #处理framework文件
+            new_framework_version_number = process_framework_files(check_framework_dir())
 
-    #打包framework
-    pod_package_framework(pod_spec_file_name)
-
-    #处理framework文件
-    new_framework_version_number = process_framework_files(check_framework_dir())
-
-    #处理完framework文件再次提交git并打tag
-    git_update_with_tag(new_framework_version_number)
-
-    #更新pod和frameworkpod
-    pod_update(pod_name)
-    pod_update(pod_name + "-framework")
+            #处理完framework文件再次提交git并打tag
+            if git_update_with_tag(new_framework_version_number) == 0:
+                #更新pod和frameworkpod
+                pod_update(pod_name)
+                pod_update(pod_name + "-framework")
 
 main()
