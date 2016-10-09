@@ -86,20 +86,20 @@ def git_update_with_tag(tag):
     os.system('git push origin master')
     os.system('git tag ' + tag)
     res = os.system('git push origin --tags')
-    print('git_update_with_tag 返回值' + res)
+    print('git_update_with_tag 返回值' + str(res))
     return res
 
 def pod_update(podname):
     repo_push = 'pod repo push EZBSpecs ' + podname + '.podspec ' + '--sources=https://github.com/CocoaPods/Specs.git,https://git.coding.net/cker/EZBSpecs.git --allow-warnings --verbose'
     res = os.system(repo_push)
-    print('pod_update 返回值' + res)
+    print('pod_update 返回值' + str(res))
     return res
 
 #打包framework
 def pod_package(file):
     commond = "pod package " + file
     res = os.system(commond)
-    print('pod_package 返回值' + res)
+    print('pod_package 返回值' + str(res))
     return res
 
 
