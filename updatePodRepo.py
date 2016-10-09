@@ -80,22 +80,27 @@ def get_pod_name():
 
 #更新git添加tag
 def git_update_with_tag(tag):
-    os.popen('git add *')
-    os.popen('git commit -m "pod update"')
-    os.popen('git pull')
-    os.popen('git push origin master')
-    os.popen('git tag ' + tag)
-    os.popen('git push origin --tags')
+    os.system('git add *')
+    os.system('git commit -m "pod update"')
+    os.system('git pull')
+    os.system('git push origin master')
+    os.system('git tag ' + tag)
+    res = os.system('git push origin --tags')
+    print('git_update_with_tag 返回值' + res)
+    return res
+
+def pod_update(podname):
+    repo_push = 'pod repo push EZBSpecs ' + podname + '.podspec ' + '--sources=https://github.com/CocoaPods/Specs.git,https://git.coding.net/cker/EZBSpecs.git --allow-warnings --verbose'
+    res = os.system(repo_push)
+    print('pod_update 返回值' + res)
+    return res
 
 #打包framework
 def pod_package(file):
     commond = "pod package " + file
-    string = os.popen(commond).read()
-    print(string)
-
-def pod_update(podname):
-    repo_push = 'pod repo push EZBSpecs ' + podname + '.podspec ' + '--sources=https://github.com/CocoaPods/Specs.git,https://git.coding.net/cker/EZBSpecs.git --allow-warnings --verbose'
-    os.popen(repo_push)
+    res = os.system(commond)
+    print('pod_package 返回值' + res)
+    return res
 
 
 def main():
