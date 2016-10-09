@@ -1,11 +1,12 @@
 Pod::Spec.new do |s|
   s.name = "TestFocusImage-framework"
-  s.version      =  "0.0.18"
+  s.version      =  "0.0.21"
   s.summary = "无限循环库"
   s.license = "MIT"
   s.authors = {"ChenKai"=>"kaychn@126.com"}
   s.homepage = "https://github.com/kaychn126/TestFocusImage"
   s.description = "无限循环库。。"
+  s.frameworks = ["QuartzCore", "CoreGraphics", "Foundation", "UIKit", "MapKit", "CoreData", "SystemConfiguration", "Accelerate"]
   s.requires_arc = true
   s.source       = { :git => "https://github.com/kaychn126/TestFocusImage.git", :tag => "#{s.version}" }
 
