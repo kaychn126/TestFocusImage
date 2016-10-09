@@ -150,12 +150,15 @@ def process_framework_files(filename):
 
         #修改s.ios.public_header_files
         public_header_files_line = get_line('s.ios.public_header_files', new_spec_file_name)
-        new_public_header_files_line = "  s.ios.public_header_files  = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework/Versions/A/Headers/*.h" + "'\n"
+        new_public_header_files_line = "#  s.ios.public_header_files  = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework/Versions/A/Headers/*.h" + "'\n"
         replace_file_line(public_header_files_line, new_public_header_files_line, new_spec_file_name)
 
         #修改s.ios.resource
         resource_line = get_line('s.ios.resource', new_spec_file_name)
         new_resource_line = "  s.ios.resource             = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework/Versions/A/Resources/**/*" + "'\n"
+        if get_line("s.ios.resource", pod_spec_file_name).strip(' ')[0] is "#":
+            new_resource_line = "#" + new_resource_line
+
         replace_file_line(resource_line, new_resource_line, new_spec_file_name)
 
         #修改s.ios.vendored_frameworks
