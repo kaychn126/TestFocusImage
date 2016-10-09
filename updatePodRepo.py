@@ -13,18 +13,31 @@ def cur_file_dir():
     elif os.path.isfile(path):
         return os.path.dirname(path)
 
-#替换行
-def replace_text(src, des, file):
-    with open(file, 'r') as f:
-        with open(file+'.new', 'w') as g:
+#替换文件中的行
+def replace_file_line(srcline, desline, filename):
+    with open(filename, 'r') as f:
+        with open(filename+'.new', 'w') as g:
+            for line in f.readlines():
+                if srcline not in line:
+                    g.write(line)
+                else:
+                    g.write(desline)
+        g.close()
+    f.close()
+    shutil.move(filename+'.new', filename)
+
+#替换文件中的特定的字符
+def replace_file_text(src, des, filename):
+    with open(filename, 'r') as f:
+        with open(filename+'.new', 'w') as g:
             for line in f.readlines():
                 if src not in line:
                     g.write(line)
                 else:
-                    g.write(des)
+                    g.write(line.replace(src, des))
         g.close()
     f.close()
-    shutil.move(file+'.new', file)
+    shutil.move(filename+'.new', filename)
 
 #从文件file中获取包含string字符的行
 def get_line(string, file):
@@ -56,8 +69,9 @@ def delete_framework_files():
     framework_dir = check_framework_dir()
     if len(framework_dir) > 0:
         shutil.rmtree(framework_dir)
-    framework_spec_file = get_spec_file(cur_file_dir(), "-framework.podspec")
+    framework_spec_file = get_spec_file(cur_file_dir(), "-framework.podspec")[0]
     if len(framework_spec_file) > 0:
+        print(framework_spec_file)
         os.remove(framework_spec_file)
 
 #文件名中包含特定字符的文件
@@ -103,18 +117,80 @@ def pod_package_framework(file):
     print('pod_package 返回值' + str(res))
     return res
 
+#处理framework文件: 包括重命名framework文件夹名字，framework文件夹内的.podspec文件内容修改 .podspec文件位置移动并提交git
+#返回新的版本号
+def process_framework_files(filename):
+    if len(filename) > 0:
+        #文件夹重命名
+        new_framework_dir_name = get_pod_name() + "-framework"
+        os.rename(filename, new_framework_dir_name)
+
+        #.podspec文件重命名并移动位置
+        spec_file_list = get_spec_file(new_framework_dir_name, ".podspec")
+        new_spec_file_name = get_pod_name() + "-framework.podspec"
+        if len(spec_file_list) > 0:
+            old_spec_file_name = spec_file_list[0]
+            os.rename(old_spec_file_name, new_spec_file_name)
+
+        #修改podspec文件内容
+        #修改name
+        name_line = get_line('s.name', new_spec_file_name)
+        new_name_line = "  s.name = " + "'" + os.path.split(new_framework_dir_name)[1] + "'\n"
+        replace_file_line(name_line, new_name_line, new_spec_file_name)
+
+        #修改s.source
+        source_line = get_line('s.source', new_spec_file_name)
+        new_source_line = get_line('s.source', get_pod_name() + ".podspec")
+        replace_file_line(source_line, new_source_line, new_spec_file_name)
+
+        #修改s.ios.preserve_paths
+        preservepaths_line = get_line('s.ios.preserve_paths', new_spec_file_name)
+        new_preservepaths_line = "  s.ios.preserve_paths       = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework" + "'\n"
+        replace_file_line(preservepaths_line, new_preservepaths_line, new_spec_file_name)
+
+        #修改s.ios.public_header_files
+        public_header_files_line = get_line('s.ios.public_header_files', new_spec_file_name)
+        new_public_header_files_line = "  s.ios.public_header_files  = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework/Versions/A/Headers/*.h" + "'\n"
+        replace_file_line(public_header_files_line, new_public_header_files_line, new_spec_file_name)
+
+        #修改s.ios.resource
+        resource_line = get_line('s.ios.resource', new_spec_file_name)
+        new_resource_line = "  s.ios.resource             = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework/Versions/A/Resources/**/*" + "'\n"
+        replace_file_line(resource_line, new_resource_line, new_spec_file_name)
+
+        #修改s.ios.vendored_frameworks
+        vendored_frameworks_line = get_line('s.ios.vendored_frameworks', new_spec_file_name)
+        new_vendored_frameworks_line = "  s.ios.vendored_frameworks  = " + "'" + os.path.basename(filename) + "/ios/" + get_pod_name() + ".framework" + "'\n"
+        replace_file_line(vendored_frameworks_line, new_vendored_frameworks_line, new_spec_file_name)
+
+        #单引号全部替换成双引号
+        replace_file_text('\'','\"' , new_spec_file_name)
+
+        #版本号再次加1
+        new_framework_version_number = add_version_number(get_line("s.version", new_spec_file_name))
+        new_framework_version_number_line = '  s.version      =  "' + new_framework_version_number + '"\n'
+        #修改-framework.podspec文件
+        replace_file_line(get_line("s.version", new_spec_file_name), new_framework_version_number_line, new_spec_file_name)
+        #修改.podspec文件
+        pod_spec_file_name = get_pod_name() + ".podspec"
+        replace_file_line(get_line("s.version", pod_spec_file_name), new_framework_version_number_line, pod_spec_file_name)
+
+        return new_framework_version_number
+    return ""
 
 def main():
-    #删除framework文件
+    # #删除framework文件
     delete_framework_files()
+
     #获取pod_name
     pod_name = get_pod_name()
     #.podspec文件名
     pod_spec_file_name = pod_name + ".podspec"
-    #版本号加1
+
+    # #版本号加1
     new_version_number = add_version_number(get_line("s.version", pod_spec_file_name))
     new_version_number_line = '  s.version      =  "' + new_version_number + '"\n'
-    replace_text(get_line("s.version", pod_spec_file_name), new_version_number_line, pod_spec_file_name)
+    replace_file_line(get_line("s.version", pod_spec_file_name), new_version_number_line, pod_spec_file_name)
 
     #提交git,打tag
     git_update_with_tag(new_version_number)
@@ -125,18 +201,14 @@ def main():
     #打包framework
     pod_package_framework(pod_spec_file_name)
 
-    # pod_framework_name = pod_name + "-framework"
-    # pod_framework_spec_file_name = pod_framework_name + ".podspec"
+    #处理framework文件
+    new_framework_version_number = process_framework_files(check_framework_dir())
 
-    # pod_package("EZBSGFocusImage.podspec")
-    # framework_dir = check_framework_dir()
-    # if len(framework_dir) > 0:
-    #     os.rename(framework_dir, "EZBSGFocusImage-framework")
-    #
-    # framework_spec_file = get_spec_file(cur_file_dir()+"/EZBSGFocusImage-framework", ".podspec")
-    # framework_spec_file_new = os.path.splitext(framework_spec_file)[0] + "-framework.podspec"
-    # os.rename(framework_spec_file, framework_spec_file_new)
-    # shutil.move(framework_spec_file_new, cur_file_dir())
+    #处理完framework文件再次提交git并打tag
+    git_update_with_tag(new_framework_version_number)
 
+    #更新pod和frameworkpod
+    pod_update(pod_name)
+    pod_update(pod_name + "-framework")
 
 main()
