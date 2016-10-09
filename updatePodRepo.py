@@ -114,7 +114,7 @@ def main():
     git_update_with_tag(new_version_number)
 
     #更新pod
-    pod_update(pod_name)
+    # pod_update(pod_name)
 
     # pod_framework_name = pod_name + "-framework"
     # pod_framework_spec_file_name = pod_framework_name + ".podspec"
