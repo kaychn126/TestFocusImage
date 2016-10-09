@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "TestFocusImage-framework"
-  s.version      =  "0.0.12"
+  s.version      =  "0.0.14"
   s.summary = "无限循环库"
   s.license = "MIT"
   s.authors = {"ChenKai"=>"kaychn@126.com"}
@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/kaychn126/TestFocusImage.git", :tag => "#{s.version}" }
 
   s.ios.deployment_target    = "7.0"
-  s.ios.preserve_paths       = "TestFocusImage-0.0.11/ios/TestFocusImage.framework"
-  s.ios.public_header_files  = "TestFocusImage-0.0.11/ios/TestFocusImage.framework/Versions/A/Headers/*.h"
-  s.ios.resource             = "TestFocusImage-0.0.11/ios/TestFocusImage.framework/Versions/A/Resources/**/*"
-  s.ios.vendored_frameworks  = "TestFocusImage-0.0.11/ios/TestFocusImage.framework"
+  s.ios.preserve_paths       = "TestFocusImage-framework/ios/TestFocusImage.framework"
+  s.ios.public_header_files  = "TestFocusImage-framework/ios/TestFocusImage.framework/Versions/A/Headers/*.h"
+  s.ios.resource             = "TestFocusImage-framework/ios/TestFocusImage.framework/Versions/A/Resources/**/*"
+  s.ios.vendored_frameworks  = "TestFocusImage-framework/ios/TestFocusImage.framework"
 end
