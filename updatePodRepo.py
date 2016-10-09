@@ -154,9 +154,10 @@ def process_framework_files(filename):
         replace_file_line(public_header_files_line, new_public_header_files_line, new_spec_file_name)
 
         #修改s.ios.resource
+        pod_spec_file_name = get_pod_name() + ".podspec"
         resource_line = get_line('s.ios.resource', new_spec_file_name)
         new_resource_line = "  s.ios.resource             = " + "'" + os.path.basename(new_framework_dir_name) + "/ios/" + get_pod_name() + ".framework/Versions/A/Resources/**/*" + "'\n"
-        if get_line("s.ios.resource", pod_spec_file_name).strip(' ')[0] is "#":
+        if get_line("s.ios.resource", pod_spec_file_name).strip(' ')[0] is "#" and get_line("s.ios.resources", pod_spec_file_name).strip(' ')[0] is "#":
             new_resource_line = "#" + new_resource_line
 
         replace_file_line(resource_line, new_resource_line, new_spec_file_name)
@@ -174,8 +175,8 @@ def process_framework_files(filename):
         new_framework_version_number_line = '  s.version      =  "' + new_framework_version_number + '"\n'
         #修改-framework.podspec文件
         replace_file_line(get_line("s.version", new_spec_file_name), new_framework_version_number_line, new_spec_file_name)
+
         #修改.podspec文件
-        pod_spec_file_name = get_pod_name() + ".podspec"
         replace_file_line(get_line("s.version", pod_spec_file_name), new_framework_version_number_line, pod_spec_file_name)
 
         return new_framework_version_number

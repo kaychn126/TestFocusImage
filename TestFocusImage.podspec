@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "TestFocusImage"
-  s.version      =  "0.0.15"
+  s.version      =  "0.0.16"
   s.summary      = "无限循环库"
 
   # This description is used to generate tags and improve search results.
