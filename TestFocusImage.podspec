@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "TestFocusImage"
-  s.version      =  "0.0.19"
+  s.version      =  "0.0.20"
   s.summary      = "无限循环库"
 
   # This description is used to generate tags and improve search results.
@@ -117,7 +117,7 @@ Pod::Spec.new do |s|
   #
 
   # s.framework  = "SomeFramework"
-  s.frameworks = "QuartzCore", "CoreGrapics", "Foundation", "UIKit", "MapKit", "CoreData", "SystemConfiguration", "Accelerate"
+  s.frameworks = "QuartzCore", "CoreGraphics", "Foundation", "UIKit", "MapKit", "CoreData", "SystemConfiguration", "Accelerate"
 
   # s.library   = "iconv"
   # s.libraries = "iconv", "xml2"

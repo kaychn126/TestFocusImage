@@ -69,10 +69,13 @@ def delete_framework_files():
     framework_dir = check_framework_dir()
     if len(framework_dir) > 0:
         shutil.rmtree(framework_dir)
-    framework_spec_file = get_spec_file(cur_file_dir(), "-framework.podspec")[0]
-    if len(framework_spec_file) > 0:
-        print(framework_spec_file)
-        os.remove(framework_spec_file)
+
+    if len(get_spec_file(cur_file_dir(), "-framework.podspec")) > 0:
+        framework_spec_file = get_spec_file(cur_file_dir(), "-framework.podspec")[0]
+        if len(framework_spec_file) > 0:
+            print(framework_spec_file)
+            os.remove(framework_spec_file)
+
 
 #文件名中包含特定字符的文件
 def get_spec_file(dir, spec):
