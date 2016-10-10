@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "TestFocusImage-framework"
-  s.version      =  "0.0.21"
+  s.version      =  "0.0.26"
   s.summary = "无限循环库"
   s.license = "MIT"
   s.authors = {"ChenKai"=>"kaychn@126.com"}
